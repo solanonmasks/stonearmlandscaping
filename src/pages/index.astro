@@ -3,6 +3,9 @@
 import '../styles/global.css';
 import { site } from '../data/site.js';
 
+// Phone link, e.g. tel:+16046530302 (empty if no phone is set).
+const tel = site.phone ? 'tel:+1' + site.phone.replace(/[^0-9]/g, '') : '';
+
 const siteUrl = Astro.site ? Astro.site.href : '/';
 const canonical = new URL('/', Astro.site ?? 'https://example.com').href;
 const ogImage = new URL(site.hero.img.src, Astro.site ?? 'https://example.com').href;
@@ -69,6 +72,7 @@ const jsonLd = {
         {site.nav.map((n) => <a href={n.href}>{n.label}</a>)}
       </nav>
       <div class="header-actions">
+        {tel && <a href={tel} class="header-phone">{site.phone}</a>}
         <a href="#quote" class="btn btn-green header-cta">Get a free quote</a>
         <button type="button" class="menu-btn" aria-expanded="false" aria-controls="mobile-nav">
           <span class="bars" aria-hidden="true"></span> Menu
@@ -77,6 +81,7 @@ const jsonLd = {
     </div>
     <nav id="mobile-nav" class="mobile-nav" aria-label="Mobile">
       {site.nav.map((n) => <a href={n.href}>{n.label}</a>)}
+      {tel && <a href={tel}>Call {site.phone}</a>}
       <a href="#quote" class="mobile-cta">Get a free quote</a>
     </nav>
   </header>
@@ -192,7 +197,7 @@ const jsonLd = {
         <div class="quote-base" data-reveal>
           <strong>{site.quote.base}</strong>
           <span>{site.quote.baseNote}</span>
-          {site.phone && <a href={'tel:' + site.phone.replace(/[^0-9+]/g, '')}>{site.phone}</a>}
+          {tel && <a href={tel}>{site.phone}</a>}
           {site.email && <a href={'mailto:' + site.email}>{site.email}</a>}
         </div>
       </div>
@@ -225,7 +230,7 @@ const jsonLd = {
   <footer class="site-footer">
     <div class="wrap">
       <img src={site.logo} alt={site.name} width="72" height="72" loading="lazy" />
-      <span>{site.footerLine}</span>
+      <span>{site.footerLine}{tel && <> · <a href={tel} class="foot-phone">{site.phone}</a></>}</span>
       <div class="foot-meta">
         <span>© {new Date().getFullYear()} {site.name}</span>
         <a href={site.credit.href} target="_blank" rel="noopener">{site.credit.label}</a>

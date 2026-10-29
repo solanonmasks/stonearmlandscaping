@@ -30,9 +30,10 @@ export const site = {
   region: 'BC',
   areaServed: ['Langley, BC'],
 
-  // Phone and email are not known yet. When you have them, fill these in
-  // and they will appear in the quote section automatically.
-  phone: '',      // e.g. '604-555-1234'
+  // Phone shows in the header, quote section, mobile menu and footer.
+  // Email is not known yet. When you have it, fill it in and it will
+  // appear in the quote section automatically.
+  phone: '(604) 653-0302',
   email: '',      // e.g. 'info@stonearmlandscaping.ca'
 
   // Paste your Formspree URL here to make the form send (see README).

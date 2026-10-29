@@ -52,8 +52,9 @@ The form currently only shows a thank-you message; it does not send anything yet
 
 ## Open items before launch
 
-- **Phone number and email are missing.** Get them from the client and fill in
-  `phone` and `email` in `src/data/site.js`; they then show in the quote section.
+- **Email is missing.** Get it from the client and fill in `email` in
+  `src/data/site.js`; it then shows in the quote section. (The phone number,
+  (604) 653-0302, is already in.)
 - **Quote form** needs a Formspree URL (see above).
 - **Domain:** change `site: 'https://example.com'` in `astro.config.mjs` to the real
   domain (used for search engines and link previews).

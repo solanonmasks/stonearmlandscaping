@@ -68,10 +68,17 @@ p { margin: 0; }
 .wm-1 { font-weight: 900; font-size: 28px; color: var(--tan); }
 .wm-2 { font-weight: 700; font-size: 13px; letter-spacing: .22em; color: var(--green-light); }
 .main-nav { display: flex; gap: 32px; font-family: var(--serif); font-weight: 700; font-size: 17px; }
-.main-nav a { color: var(--cream); text-decoration: none; }
+.main-nav a { color: var(--cream); text-decoration: none; white-space: nowrap; }
 .main-nav a:hover { color: var(--green-light); }
 .header-actions { display: flex; align-items: center; gap: 12px; }
 .header-cta { font-size: 17px; padding: 14px 22px; }
+.header-phone { color: var(--cream); text-decoration: none; font-weight: 700; font-size: 17px; white-space: nowrap; }
+.header-phone:hover { color: var(--green-light); }
+/* Header phone only on wide screens, so the nav doesn't get squeezed.
+   On smaller screens the phone is in the menu, quote section and footer. */
+@media (max-width: 1199px) { .header-phone { display: none; } }
+.foot-phone { color: var(--cream); font-weight: 600; }
+.foot-phone:hover { color: var(--green-light); }
 .menu-btn { display: none; background: transparent; border: 1.5px solid var(--cream); color: var(--cream); font-family: var(--serif); font-weight: 700; font-size: 16px; padding: 12px 14px; cursor: pointer; align-items: center; gap: 8px; }
 .menu-btn .bars { display: inline-block; width: 18px; height: 12px; position: relative; border-top: 2px solid currentColor; border-bottom: 2px solid currentColor; }
 .menu-btn .bars::after { content: ''; position: absolute; left: 0; right: 0; top: 3px; border-top: 2px solid currentColor; }
