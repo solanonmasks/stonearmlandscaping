@@ -1,0 +1,351 @@
+---
+// Page markup. Content comes from src/data/site.js.
+import '../styles/global.css';
+import { site } from '../data/site.js';
+
+const siteUrl = Astro.site ? Astro.site.href : '/';
+const canonical = new URL('/', Astro.site ?? 'https://example.com').href;
+const ogImage = new URL(site.hero.img.src, Astro.site ?? 'https://example.com').href;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'HomeAndConstructionBusiness',
+  additionalType: 'https://schema.org/LandscapingBusiness',
+  name: site.name,
+  url: siteUrl,
+  logo: new URL(site.logo, Astro.site ?? 'https://example.com').href,
+  image: ogImage,
+  description: site.description,
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: site.city,
+    addressRegion: site.region,
+    addressCountry: 'CA',
+  },
+  areaServed: site.areaServed.map((name) => ({ '@type': 'Place', name })),
+  ...(site.phone ? { telephone: site.phone } : {}),
+  ...(site.email ? { email: site.email } : {}),
+};
+---
+<!doctype html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{site.title}</title>
+  <meta name="description" content={site.description} />
+  <link rel="canonical" href={canonical} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="theme-color" content="#2B1D12" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content={site.name} />
+  <meta property="og:title" content={site.title} />
+  <meta property="og:description" content={site.description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:locale" content="en_CA" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={site.title} />
+  <meta name="twitter:description" content={site.description} />
+  <meta name="twitter:image" content={ogImage} />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+  <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@600;700;800;900&family=Libre+Franklin:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <script is:inline>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+  <!-- Header -->
+  <header id="top" class="site-header">
+    <div class="wrap bar">
+      <a href="#top" class="brand" aria-label={site.name}>
+        <img src={site.logo} alt="" width="72" height="72" />
+        <span class="wordmark"><span class="wm-1">Stonearm</span><span class="wm-2">LANDSCAPING</span></span>
+      </a>
+      <nav class="main-nav" aria-label="Main">
+        {site.nav.map((n) => <a href={n.href}>{n.label}</a>)}
+      </nav>
+      <div class="header-actions">
+        <a href="#quote" class="btn btn-green header-cta">Get a free quote</a>
+        <button type="button" class="menu-btn" aria-expanded="false" aria-controls="mobile-nav">
+          <span class="bars" aria-hidden="true"></span> Menu
+        </button>
+      </div>
+    </div>
+    <nav id="mobile-nav" class="mobile-nav" aria-label="Mobile">
+      {site.nav.map((n) => <a href={n.href}>{n.label}</a>)}
+      <a href="#quote" class="mobile-cta">Get a free quote</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-grid">
+        <div class="hero-text">
+          <p class="hero-eyebrow" data-hero style="--d:.1s"><span class="green">{site.hero.place}</span><span class="tan">{site.hero.badge}</span></p>
+          <h1 data-hero style="--d:.22s">{site.hero.title} <span class="green">{site.hero.titleAccent}</span></h1>
+          <p class="hero-sub" data-hero style="--d:.34s">{site.hero.text}</p>
+          <div class="btn-row" data-hero style="--d:.46s">
+            <a href="#quote" class="btn btn-green btn-lg">Get a free quote</a>
+            <a href="#work" class="btn btn-tan-outline btn-lg">See our work</a>
+          </div>
+        </div>
+        <div class="hero-media">
+          <img class="hero-img" src={site.hero.img.src} width={site.hero.img.w} height={site.hero.img.h} alt={site.hero.imgAlt} fetchpriority="high" />
+          <div class="stones" aria-hidden="true">
+            {site.hero.stones.map((c, i) => (
+              <span class={i % 2 ? 'short' : 'tall'} style={`background:${c};--d:${(0.7 + i * 0.08).toFixed(2)}s`}></span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Brown strip -->
+    <section class="strip" aria-label="Why Stonearm">
+      <div class="wrap">
+        {site.strip.map((s) => <span class="strip-item"><span class="diamond" aria-hidden="true"></span>{s}</span>)}
+      </div>
+    </section>
+
+    <!-- What we build -->
+    <section id="build" class="wrap section">
+      <div class="two-col section-head">
+        <h2 class="h2" data-reveal>{site.build.title}</h2>
+        <p data-reveal>{site.build.text}</p>
+      </div>
+      <div class="picker">
+        <div class="picker-list" role="tablist" aria-label="Services" aria-orientation="vertical">
+          {site.build.items.map((b, i) => (
+            <button type="button" role="tab" class="pick" id={`pick-${i}`} aria-controls={`pick-panel-${i}`}
+              aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}>
+              {b.t}<span class="diamond" aria-hidden="true"></span>
+            </button>
+          ))}
+        </div>
+        <div class="picker-panels">
+          {site.build.items.map((b, i) => (
+            <div class="pick-panel" role="tabpanel" id={`pick-panel-${i}`} aria-labelledby={`pick-${i}`} hidden={i !== 0}>
+              <div class="pick-media"><img src={b.img.src} width={b.img.w} height={b.img.h} alt={b.t} loading="lazy" /></div>
+              <div class="pick-body">
+                <h3>{b.t}</h3>
+                <p>{b.d}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Property care -->
+    <section id="care" class="care">
+      <div class="wrap section two-col care-grid">
+        <div class="care-left">
+          <h2 class="h2" data-reveal>{site.care.title} <span class="green-dark">{site.care.titleAccent}</span></h2>
+          <p data-reveal>{site.care.text}</p>
+        </div>
+        <div class="care-tiles">
+          {site.care.items.map((c) => (
+            <div class="care-tile" data-reveal>
+              <span class={'care-label ' + c.tone}>{c.g}</span>
+              <h3>{c.t}</h3>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent work -->
+    <section id="work" class="wrap section">
+      <h2 class="h2 work-title" data-reveal>Recent work.</h2>
+      <div class="gallery">
+        {site.gallery.map((g, i) => (
+          <figure class={'tile' + (i === 0 ? ' tile-big' : '') + (i === 2 ? ' tile-tall' : '')} data-reveal>
+            <img src={g.src} width={g.w} height={g.h} alt={g.t} loading="lazy" />
+            <figcaption>{g.t}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+
+    <!-- Promise band -->
+    <section class="promise" aria-label="Our promise">
+      <div class="wrap promise-grid">
+        {site.promises.map((p) => (
+          <div class="promise-item" data-reveal>
+            <h3>{p.t}</h3>
+            <p>{p.d}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Quote -->
+    <section id="quote" class="wrap section two-col quote-grid">
+      <div class="quote-left">
+        <h2 class="h2-lg" data-reveal>{site.quote.title}</h2>
+        <p data-reveal>{site.quote.text}</p>
+        <div class="quote-base" data-reveal>
+          <strong>{site.quote.base}</strong>
+          <span>{site.quote.baseNote}</span>
+          {site.phone && <a href={'tel:' + site.phone.replace(/[^0-9+]/g, '')}>{site.phone}</a>}
+          {site.email && <a href={'mailto:' + site.email}>{site.email}</a>}
+        </div>
+      </div>
+      <div>
+        <form class="form" id="quote-form" data-reveal data-endpoint={site.formEndpoint}>
+          <div class="form-row">
+            <label class="field">Name<input name="name" autocomplete="name" required /></label>
+            <label class="field">Phone<input name="phone" type="tel" autocomplete="tel" required /></label>
+          </div>
+          <label class="field">Email<input name="email" type="email" autocomplete="email" required /></label>
+          <fieldset class="chips-group">
+            <legend>What do you need?</legend>
+            <div class="chips">
+              {site.quote.chips.map((c) => (
+                <button type="button" class="chip" aria-pressed="false" data-value={c}>{c}</button>
+              ))}
+            </div>
+            <input type="hidden" name="services" value="" />
+          </fieldset>
+          <label class="field">Project details<textarea name="message" rows="4"></textarea></label>
+          <p class="form-error" role="alert" hidden>{site.quote.error}</p>
+          <button type="submit" class="btn btn-green btn-lg form-submit">{site.quote.submitLabel}</button>
+        </form>
+        <div class="thanks" id="form-thanks" role="status" hidden>{site.quote.thanks}</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="wrap">
+      <img src={site.logo} alt={site.name} width="72" height="72" loading="lazy" />
+      <span>{site.footerLine}</span>
+      <div class="foot-meta">
+        <span>© {new Date().getFullYear()} {site.name}</span>
+        <a href={site.credit.href} target="_blank" rel="noopener">{site.credit.label}</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Sticky bottom bar (phones and tablets) -->
+  <div class="bottom-bar">
+    <a href="#work" class="work-link">Our work</a>
+    <a href="#quote" class="quote-link">Free quote</a>
+  </div>
+
+  <script>
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Scroll reveal
+    const revealEls = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));
+    const showAll = () => revealEls.forEach((el) => { el.classList.remove('pre-reveal'); el.classList.add('revealed'); });
+    if (!reduce && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        let i = 0;
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          const el = e.target as HTMLElement;
+          el.style.transitionDelay = `${Math.min(i++, 5) * 0.08}s`;
+          el.classList.remove('pre-reveal');
+          el.classList.add('revealed');
+          io.unobserve(el);
+        });
+      }, { rootMargin: '0px 0px -8% 0px' });
+      revealEls.forEach((el) => {
+        if (el.getBoundingClientRect().top < window.innerHeight) return;
+        el.classList.add('pre-reveal');
+        io.observe(el);
+      });
+      setTimeout(showAll, 4000); // safety net
+    }
+
+    // Mobile menu
+    const menuBtn = document.querySelector<HTMLButtonElement>('.menu-btn');
+    const mobileNav = document.getElementById('mobile-nav');
+    if (menuBtn && mobileNav) {
+      const setOpen = (open: boolean) => {
+        menuBtn.setAttribute('aria-expanded', String(open));
+        mobileNav.classList.toggle('open', open);
+      };
+      menuBtn.addEventListener('click', () => setOpen(menuBtn.getAttribute('aria-expanded') !== 'true'));
+      mobileNav.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+    }
+
+    // "What we build" service picker
+    const picks = Array.from(document.querySelectorAll<HTMLButtonElement>('.pick'));
+    const panels = Array.from(document.querySelectorAll<HTMLElement>('.pick-panel'));
+    const choose = (idx: number, focus = false) => {
+      picks.forEach((p, i) => {
+        const on = i === idx;
+        p.setAttribute('aria-selected', String(on));
+        p.tabIndex = on ? 0 : -1;
+      });
+      panels.forEach((panel, i) => { panel.hidden = i !== idx; });
+      if (focus) picks[idx].focus();
+    };
+    picks.forEach((p, i) => {
+      p.addEventListener('click', () => choose(i));
+      p.addEventListener('keydown', (e) => {
+        const next = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+        if (next === undefined) return;
+        e.preventDefault();
+        choose((i + next + picks.length) % picks.length, true);
+      });
+    });
+
+    // Quote form
+    const form = document.getElementById('quote-form') as HTMLFormElement | null;
+    const thanks = document.getElementById('form-thanks');
+    if (form && thanks) {
+      const hidden = form.querySelector<HTMLInputElement>('input[name="services"]')!;
+      const chips = form.querySelectorAll<HTMLButtonElement>('.chip');
+      chips.forEach((chip) => {
+        chip.addEventListener('click', () => {
+          chip.setAttribute('aria-pressed', String(chip.getAttribute('aria-pressed') !== 'true'));
+          hidden.value = Array.from(chips)
+            .filter((c) => c.getAttribute('aria-pressed') === 'true')
+            .map((c) => c.dataset.value)
+            .join(', ');
+        });
+      });
+
+      const errorEl = form.querySelector<HTMLElement>('.form-error')!;
+      const submitBtn = form.querySelector<HTMLButtonElement>('.form-submit')!;
+      const showThanks = () => { form.hidden = true; thanks.hidden = false; };
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!form.reportValidity()) return;
+        errorEl.hidden = true;
+        const endpoint = form.dataset.endpoint;
+        if (!endpoint) {
+          console.warn('formEndpoint is empty in src/data/site.js, so nothing was sent.');
+          showThanks();
+          return;
+        }
+        submitBtn.disabled = true;
+        try {
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: { Accept: 'application/json' },
+          });
+          if (!res.ok) throw new Error(String(res.status));
+          showThanks();
+        } catch {
+          errorEl.hidden = false;
+        } finally {
+          submitBtn.disabled = false;
+        }
+      });
+    }
+  </script>
+</body>
+</html>
